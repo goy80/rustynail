@@ -6,7 +6,11 @@ module Rustynail
   @keyword_target_columns = []
   @table_name = "table"
 
-  def self.facet_options opt={}
+  def aaa
+    p "aaaaAAA"
+  end
+
+  def facet_options opt={}
 
     opt = {} if opt.nil?
     filter = {}
