@@ -2,22 +2,30 @@ require "rustynail/version"
 
 module Rustynail
 
-  @@facet_columns = []
   @@keyword_target_columns = []
+  @@facet_columns = []
   @@table_name = "my_table"
 
-  def aaa
-    p "aaaaAAA"
-  end
-
   def self.extended( klass )
-    p "extending..."
-
-
-
+    @@table_name = klass.table_name
   end
 
-  def facet_options opt={}
+  # 全文検索の対象フィールド
+  def match_columns columns
+    @@keyword_target_columns = columns
+  end
+
+  # ファセット検索の対象フィールド
+  def facet_columns columns
+    @@facet_columns = columns
+  end
+
+
+  def facet_options opt = {}
+
+    if @@keyword_target_columns.blank?
+      raise "keyword-target-columns not specified."
+    end
 
     opt = {} if opt.nil?
     filter = {}
@@ -28,7 +36,7 @@ module Rustynail
     # filterオプションの構築
     filter_conds = []
     @@facet_columns.each do | column |
-      if filter.key? key
+      if filter.key? column
         filter_conds << "#{ column } == #{ filter[ column ] }"
       end
     end
@@ -46,21 +54,22 @@ module Rustynail
             --drilldown_sortby '-_nsubrecs, _key' \
             --drilldown_limit -1 \
             ") AS facet_options !
-
-
     Rails.logger.debug "sql=#{sql}"
+
     dum = connection.select sql
     res = JSON.parse( dum.first["facet_options"] )
     res.delete_at( 0 )
 
     ret = {}
-
     @@facet_columns.each_with_index do | column, idx |
       2.times do
         res[ idx ].delete_at 0
       end
-      ret[ column ] = Hash[ *res[ idx ].flatten ]
+      ret[ column.to_s ] = Hash[ *res[ idx ].flatten ]
     end
+
+    Rails.logger.debug "facet_options: #{ ret.inspect }"
+
     ret
 
   end
