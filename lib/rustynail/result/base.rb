@@ -1,17 +1,18 @@
 # coding: utf-8
 
 require "rustynail/result/direction"
+require "rustynail/result/options"
 
 
 module Rustynail::Result
   class Base
 
-    attr :data, :direction
+    attr :list, :options, :direction
 
     def initialize opt={}
-      @data = opt[ :data ].presence || []
-      direction = opt[ :direction ].presence || ""
-      @direction = Direction.new( direction )
+      @list = opt[ :list ].presence || []
+      @options = opt[ :options ].presence || Options.new( {} )
+      @direction = opt[ :direction ].presence || Direction.new( "" )
     end
 
   end

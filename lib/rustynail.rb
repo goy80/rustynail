@@ -27,8 +27,26 @@ module Rustynail
       @@facet_columns = columns
     end
 
+    #
+    # 検索結果、ファセットオプションなどをまとめて返す。
+    #
+    def self.facet_search( filter = {} )
+      begin
+        Rails.logger.debug "filter = #{ filter }"
+        list = search( filter )
+        options = facet_options( filter )
+        @result = Result::Base.new( list: list, options: options, direction: Result::Direction.new( @direction ) )
+      rescue => ex
+        Rails.logger.error "exception occur during facet_search. message=#{ ex.message }, backtrace is bellow.\n #{ ex.backtrace.join( "\n" )}"
+        raise "fail_to_facet_search"
+      end
+    end
+
+
+    #
     # 検索の実行
-    scope :search, ->( keyword, filter={} ) do
+    #
+    scope :search, ->( filter={} ) do
 
       cond = []
       values = {}
@@ -36,9 +54,9 @@ module Rustynail
       orders = [ "sales_rank", "price desc" ]
 
       # 絞込み条件
-      if keyword.present?
+      if filter[ :keyword ].present?
         cond << %! MATCH( `asin`,`title`,`maker`,`feature`,`description`,`item_attributes` ) AGAINST( :keyword IN BOOLEAN MODE) !
-        values[ :keyword ] = keyword
+        values[ :keyword ] = filter[ :keyword ]
       end
       if filter.key? "price_zone"
         cond << " price_zone = :price_zone "
@@ -67,15 +85,16 @@ module Rustynail
 
       end
 
+      # ソート順
+      @direction = orders.first
+
       # 検索の実行
       ret = self.where( cond.join(" AND "), values  )
           .order( orders.join(", ") )
           .limit( @@search_limit )
 
-
-      @result = Result::Base.new(  data: ret, direction: orders.first )
+      Rails.logger.debug "facet_search: list sql=#{ ret.to_sql}"
       ret
-
     end
 
 
@@ -83,17 +102,12 @@ module Rustynail
     #
     # ファセットを返す
     #
-    def self.facet_options opt = {}, filter = {}
+    def self.facet_options( filter = {} )
       begin
         filter ||= {}
 
         if @@full_text_search_columns.blank?
           raise "full-text-search-columns not specified."
-        end
-
-        opt = {} if opt.nil?
-        opt.each do | key, value |
-          filter[ key.to_sym ] = value
         end
 
         # filterオプションの構築
@@ -137,7 +151,7 @@ module Rustynail
 
         Rails.logger.debug "facet_options: #{ ret.inspect }"
 
-        ret
+        Result::Options.new( ret )
       rescue => ex
         Rails.logger.error "exception: message = #{ ex.message }. backtrace is bellow.\n #{ ex.backtrace.join("\n") }"
       end

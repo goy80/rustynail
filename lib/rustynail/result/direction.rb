@@ -7,8 +7,8 @@ module Rustynail::Result
 
     def initialize str
       array = str.strip.split(" ")
-      @sort_by = array[ 0 ].to_sym
-      @sort_direction = array[ 1 ].to_sym
+      @sort_by = array[ 0 ].to_sym unless array[ 0 ].nil?
+      @sort_direction = array[ 1 ].to_sym unless array[ 1 ].nil?
     end
 
     #
