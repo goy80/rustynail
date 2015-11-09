@@ -168,3 +168,10 @@ module Rustynail
 
   end
 end
+
+require "rustynail/action_view_extension"
+require "rustynail/hooks"
+require "rustynail/railtie"
+require "rustynail/helpers/facet_option"
+
+
