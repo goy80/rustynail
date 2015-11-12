@@ -1,3 +1,10 @@
-AAAA dayo
-
-options = <%= options.inspect %>
+<% options.each do | column, opt_hash | %>
+<div>
+  <%= column %>
+  <ul>
+    <% opt_hash.each do | opt_name, count | %>
+      <li><%= opt_name_label( column, opt_name ) %> <%= number_with_delimiter count %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>

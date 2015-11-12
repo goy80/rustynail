@@ -15,6 +15,7 @@ module Rustynail
         action_view.render( partial: "facet_option", locals: { options: @facet } )
       end
 
+
     end
   end
 end
