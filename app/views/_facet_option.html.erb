@@ -1,10 +1,30 @@
+<ul>
+  <li>更新日時　昇順</li>
+  <li>更新日時　降順</li>
+</ul>
+<% direction.sortable_columns.each do | column | %>
+  <% [ :asc, :desc ].each do | direction | %>
+    <li><%= "#{ column } #{ direction }" %></li>
+  <% end %>
+<% end %>
+
+
+
 <% options.each do | column, opt_hash | %>
 <div>
-  <%= column %>
+  <h5><%= column_name_label( column ) %>で絞り込む</h5>
   <ul>
-    <% opt_hash.each do | opt_name, count | %>
-      <li><%= opt_name_label( column, opt_name ) %> <%= number_with_delimiter count %></li>
+    <%
+      cnt = 0
+      opt_hash.each do | opt_name, count |
+        cnt += 1
+    %>
+      <li><%= opt_name_label( column, opt_name ) %> <%= number_with_delimiter( count, delimiter: "," ) %></li>
+      <% break if facet_max?( cnt ) %>
     <% end %>
   </ul>
+  <% if facet_max?( cnt ) && opt_hash.keys.length > cnt %>
+    <%= link_to "#{ column_name_label( column )}を全て見る", "/#{column}s" %>
+  <% end %>
 </div>
 <% end %>

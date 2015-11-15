@@ -3,8 +3,8 @@
 module Rustynail
   module ActionViewExtension
 
-    def facet_options facets={}
-      facet_options = Rustynail::Helpers::FacetOption.new( facets )
+    def facet_options facets = {}, sort_direction = nil
+      facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction )
       facet_options.to_s
     end
 
@@ -23,6 +23,26 @@ module Rustynail
       ret = opt_name if ret.nil?
       ret
 
+    end
+
+    def column_name_label column
+      column = column.to_sym
+      converter = Rustynail.config.column_name_converter
+      ret = nil
+      if !converter.nil?
+        if converter.key?( column )
+          ret = converter[ column ]
+        end
+      end
+      ret = column if ret.nil?
+      ret
+    end
+
+    #
+    # 選択肢の上限に達していればtrue
+    #
+    def facet_max? count
+      Rustynail.config.facet_max > 0 && count >= Rustynail.config.facet_max
     end
 
   end

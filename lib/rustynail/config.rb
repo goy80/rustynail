@@ -1,0 +1,30 @@
+# coding: utf-8
+
+require "active_support/configurable"
+
+module Rustynail
+
+  class Configuration
+    include ActiveSupport::Configurable
+    config_accessor :column_name_converter
+    config_accessor :option_name_converter
+    config_accessor :facet_max
+  end
+
+  def self.config
+    @config
+  end
+
+  def self.configure( &block )
+    yield @config ||= Rustynail::Configuration.new
+  end
+
+  # デフォルト値
+  configure do | config |
+    config.column_name_converter = nil
+    config.option_name_converter = nil
+    facet_max = -1
+  end
+
+end
+
