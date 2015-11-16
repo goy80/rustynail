@@ -3,12 +3,17 @@
 module Rustynail::Result
   class Direction
 
-    attr :sort_by, :sort_direction
+    attr :sort_by, :sort_direction, :sortable_columns
 
-    def initialize str
-      array = str.strip.split(" ")
-      @sort_by = array[ 0 ].to_sym unless array[ 0 ].nil?
-      @sort_direction = array[ 1 ].to_sym unless array[ 1 ].nil?
+    def initialize str = nil, opt = {}
+      @sort_by = nil
+      @sort_direction = nil
+      unless str.nil?
+        array = str.strip.split(" ")
+        @sort_by = array[ 0 ].to_sym unless array[ 0 ].nil?
+        @sort_direction = array[ 1 ].to_sym unless array[ 1 ].nil?
+      end
+      @sortable_columns = opt[ :sortable_columns ].presence || []
     end
 
     #

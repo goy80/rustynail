@@ -8,6 +8,8 @@ module Rustynail
   extend ActiveSupport::Concern
 
   @@full_text_search_columns = []
+  @@facet_columns = []
+  @@sortable_columns = []
   @@table_name = "my_table"
   @@search_limit = 200
 
@@ -24,8 +26,11 @@ module Rustynail
     # ファセット検索の対象フィールド
     def self.facet_columns columns
       @@facet_columns = columns
+    end
 
-
+    # ソート可能フィールド
+    def self.sortable_columns columns
+      @@sortable_columns = columns
     end
 
     #
@@ -37,11 +42,16 @@ module Rustynail
       begin
         list = search( filter )
         options = facet_options( filter )
-        @result = Result::Base.new( list: list, options: options, direction: Result::Direction.new( @direction ) )
+        @result = Result::Base.new( list: list, options: options, direction: sort_direction )
       rescue => ex
         Rails.logger.error "exception occur during facet_search. message=#{ ex.message }, backtrace is bellow.\n #{ ex.backtrace.join( "\n" )}"
         raise "fail_to_facet_search"
       end
+    end
+
+
+    def self.sort_direction
+      direction = Result::Direction.new( @direction, sortable_columns: @@sortable_columns )
     end
 
 

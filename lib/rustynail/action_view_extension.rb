@@ -3,8 +3,12 @@
 module Rustynail
   module ActionViewExtension
 
-    def facet_options facets = {}, sort_direction = nil
-      facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction )
+    def facet_options opt={}
+      facets = opt[ :facet_option ].presence || {}
+      sort_direction = opt[ :sort_direction ]
+      filter = opt[ :filter ] || {}
+
+      facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction, filter )
       facet_options.to_s
     end
 
