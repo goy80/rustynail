@@ -69,19 +69,35 @@ module Rustynail
     end
 
     #
+    # ソート順を変えた検索結果へのパスを返す。
+    #
+    def sort_result_path( column, direction, filter = {} )
+      filter = build_filter( :order_by, filter, :select, column ).symbolize_keys
+      Rustynail.config.search_action_name.to_s+"?"+build_query_string( :direction, filter, :select, direction )
+    end
+
+
+    #
     # ファセット検索結果へのクエリーストリングの作成
     #
     # @return [ String ] 検索結果パスのクエリーストリング
     #
     def build_query_string( column, orig_filter = {}, operation = :select, value = nil )
+      params = build_filter( column, orig_filter, operation, value )
+      params.to_query( Rustynail.config.qs_filter_name )
+    end
+
+    def build_filter( column, orig_filter = {}, operation = :select, value = nil )
       filter = orig_filter.dup
       if operation == :select
-        params = filter.merge( { column.to_sym => value } ).sort
+        ary0 = filter.merge( { column.to_sym => value } )
+        ary = ary0.sort
+        params = Hash[ *ary.flatten ]
       else
         filter.delete( column.to_sym )
         params = filter
       end
-      Hash[ *params.flatten ].to_query( Rustynail.config.qs_filter_name )
+      params
     end
 
 

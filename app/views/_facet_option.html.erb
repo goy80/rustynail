@@ -12,7 +12,7 @@
       end
   %>
     <% directions.each do | direction | %>
-      <li><%= link_to "#{ field } #{ direction }", "?#{ filter.to_query( :filter ) }" %></li>
+      <li><%= link_to "#{ field } #{ direction }", sort_result_path( field, direction, filter ) %></li>
     <% end %>
   <% end %>
   </ul>
