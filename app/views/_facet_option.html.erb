@@ -27,9 +27,13 @@
       cnt = 0
       opt_hash.each do | opt_name, count |
         cnt += 1
+        is_selected = selected_option?( column, opt_name, filter )
     %>
-      <li>
+      <li <%= "class=selected_option" if is_selected %> >
         <%= link_to "#{ opt_name_label( column, opt_name ) } #{ number_with_delimiter( count, delimiter: "," ) }",  facet_search_path( column, opt_name, filter ) %>
+        <% if is_selected %>
+          <%= link_to "戻る", back_search_path( column, filter ) %>
+        <% end %>
       </li>
       <% break if facet_max?( cnt ) %>
     <% end %>

@@ -54,17 +54,42 @@ module Rustynail
     #
     # @param [ String ] column 変更カラム名
     # @param [ String/Numeric ] value 変更値
-    # @@aram [ Hash ] filter 現在選択されている検索条件
+    # @param [ Hash ] filter 現在選択されている検索条件
+    # @return [ String ] ファセット検索結果へのパス
     #
     def facet_search_path( column, value, filter = {} )
-      Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, value, filter )
+      Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, filter, :select, value )
+    end
+
+    #
+    # columnの指定をはずした検索結果へのパスを返す。
+    #
+    def back_search_path( column, filter = {} )
+      Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, filter, :remove )
     end
 
     #
     # ファセット検索結果へのクエリーストリングの作成
     #
-    def build_query_string( column, value, filter = {} )
-      filter.merge( { column.to_sym => value } ).to_query( Rustynail.config.qs_filter_name )
+    # @return [ String ] 検索結果パスのクエリーストリング
+    #
+    def build_query_string( column, orig_filter = {}, operation = :select, value = nil )
+      filter = orig_filter.dup
+      if operation == :select
+        params = filter.merge( { column.to_sym => value } ).sort
+      else
+        filter.delete( column.to_sym )
+        params = filter
+      end
+      Hash[ *params.flatten ].to_query( Rustynail.config.qs_filter_name )
+    end
+
+
+    #
+    # 選択中のオプションかどうか
+    #
+    def selected_option?( column, opt_name, filter = {} )
+      filter[ column ].to_s == opt_name.to_s
     end
 
 
