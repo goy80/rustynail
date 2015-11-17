@@ -49,5 +49,24 @@ module Rustynail
       Rustynail.config.facet_max > 0 && count >= Rustynail.config.facet_max
     end
 
+    #
+    # ファセット検索結果へのパスを返す。
+    #
+    # @param [ String ] column 変更カラム名
+    # @param [ String/Numeric ] value 変更値
+    # @@aram [ Hash ] filter 現在選択されている検索条件
+    #
+    def facet_search_path( column, value, filter = {} )
+      Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, value, filter )
+    end
+
+    #
+    # ファセット検索結果へのクエリーストリングの作成
+    #
+    def build_query_string( column, value, filter = {} )
+      filter.merge( { column.to_sym => value } ).to_query( Rustynail.config.qs_filter_name )
+    end
+
+
   end
 end

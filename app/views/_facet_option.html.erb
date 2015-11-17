@@ -29,7 +29,7 @@
         cnt += 1
     %>
       <li>
-        <%= link_to "#{ opt_name_label( column, opt_name ) } #{ number_with_delimiter( count, delimiter: "," ) }", "?#{ filter.to_query( :filter )}" %>
+        <%= link_to "#{ opt_name_label( column, opt_name ) } #{ number_with_delimiter( count, delimiter: "," ) }",  facet_search_path( column, opt_name, filter ) %>
       </li>
       <% break if facet_max?( cnt ) %>
     <% end %>
