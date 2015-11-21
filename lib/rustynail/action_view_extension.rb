@@ -3,6 +3,14 @@
 module Rustynail
   module ActionViewExtension
 
+    #
+    # ファセット検索のviewを返す。
+    #
+    # @params [ Hash ] opt ファセット検索結果。
+    # @option opt [ Hash ] :facet_option ファセット検索オプション。
+    # @option opt [ Result::Direction ] :sort_direction 検索結果ソート順。
+    # @option opt [ Hash ] :filter 現在選択されている検索条件。
+    #
     def facet_options opt={}
       facets = opt[ :facet_option ].presence || {}
       sort_direction = opt[ :sort_direction ]
@@ -12,6 +20,9 @@ module Rustynail
       facet_options.to_s
     end
 
+    #
+    # ファセット検索オプションの日本語表記を返す。
+    #
     def opt_name_label column, opt_name
 
       ret = nil
@@ -29,6 +40,9 @@ module Rustynail
 
     end
 
+    #
+    # カラム名の日本語表記を返す。
+    #
     def column_name_label column
       column = column.to_sym
       converter = Rustynail.config.column_name_converter
@@ -62,7 +76,7 @@ module Rustynail
     end
 
     #
-    # columnの指定をはずした検索結果へのパスを返す。
+    # columnの条件をはずした検索結果へのパスを返す。
     #
     def back_search_path( column, filter = {} )
       Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, filter, :remove )

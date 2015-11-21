@@ -10,6 +10,7 @@ module Rustynail
   @@full_text_search_columns = []
   @@facet_columns = []
   @@sortable_columns = []
+  @@default_sort = []
   @@table_name = "my_table"
   @@search_limit = 200
 
@@ -31,6 +32,11 @@ module Rustynail
     # ソート可能フィールド
     def self.sortable_columns columns
       @@sortable_columns = columns
+    end
+
+    # デフォルトのソート順
+    def self.default_sort sort
+      @@default_sort = sort
     end
 
     #
@@ -56,45 +62,36 @@ module Rustynail
 
 
     #
-    # 検索の実行
+    # 検索結果の取得
     #
-    scope :search, ->( filter={} ) do
+    scope :search, ->( filter={} ){
+
+      raise "full_text_search_columns not specified." if @@full_text_search_columns.blank?
 
       cond = []
       values = {}
       filter = {} if filter.nil?
-      orders = [ "sales_rank", "price desc" ]
 
-      # 絞込み条件
+      # 全文検索による絞込み
       if filter[ :keyword ].present?
-        cond << %! MATCH( `asin`,`title`,`maker`,`feature`,`description`,`item_attributes` ) AGAINST( :keyword IN BOOLEAN MODE) !
+        columns = @@full_text_search_columns.map{ | column | "`#{column}`" }
+        cond << %! MATCH( #{ columns.join(" ,") } ) AGAINST( :keyword IN BOOLEAN MODE) !
         values[ :keyword ] = filter[ :keyword ]
       end
-      if filter.key? "price_zone"
-        cond << " price_zone = :price_zone "
-        values[ :price_zone ] = filter[ "price_zone" ]
-      end
-      if filter.key? "maker"
-        cond << " maker = :maker "
-        values[ :maker ] = filter[ "maker" ]
+
+      # ファセットオプションよる絞込み
+      @@facet_columns.each do | column |
+        if filter.key? column
+          cond << " #{column} = :#{column} "
+          values[ column ] = filter[ column ]
+        end
       end
 
       # OrderBy
-      if filter.key?( "orderby" ) && ["updated_at","price","sales_rank"].include?( filter[ "orderby" ] )
-
-        direc = "asc"
-        if filter.key?( "direction" ) && [ "asc", "desc" ].include?( filter[ "direction"] )
-          direc = filter[ "direction" ]
-        end
-        orders =  [ filter[ "orderby" ] + " " + direc ]
-
-        unless filter[ "orderby" ] == "price"
-          orders << "price desc"
-        end
-        unless filter[ "orderby" ] == "sales_rank"
-          orders << "sales_rank"
-        end
-
+      if filter.key?( "order_by" )
+        orders = merge_order( filter[ "order_by" ], filter[ "direction"] )
+      else
+        orders = @@default_sort
       end
 
       # ソート順
@@ -105,14 +102,36 @@ module Rustynail
           .order( orders.join(", ") )
           .limit( @@search_limit )
 
-      Rails.logger.debug "facet_search: list sql=#{ ret.to_sql}"
       ret
-    end
-
-
+    }
 
     #
-    # ファセットを返す
+    # 選択されたソート順とデフォルトのソート順のマージ
+    #
+    # @param [ String ] order_by ソートカラム名
+    # @param [ String ] direction asc or desc
+    #
+    def self.merge_order( order_by, direction )
+      reserve = {}
+      @@default_sort.each do | sort |
+        ary = sort.split( " " )
+        reserve[ ary[ 0 ].to_s.strip ] = ary[ 1 ].to_s.strip
+      end
+      reserve.delete order_by
+
+      orders = []
+      orders << "#{ order_by } #{ direction }"
+      reserve.each do | column, direction |
+        orders << "#{ column } #{ direction }"
+      end
+      orders
+    end
+
+    #
+    # 検索結果に対してのファセットを返す。
+    #
+    # @param [ Hash ] flter 検索条件
+    # @return [ Result::Options ] ファセット検索条件オブジェクト
     #
     def self.facet_options( filter = {} )
       begin
@@ -160,8 +179,6 @@ module Rustynail
           end
           ret[ column.to_s ] = Hash[ *res[ idx ].flatten ]
         end
-
-        Rails.logger.debug "facet_options: #{ ret.inspect }"
 
         Result::Options.new( ret )
       rescue => ex
