@@ -13,7 +13,18 @@ module Rustynail::Result
         @sort_by = array[ 0 ].to_sym unless array[ 0 ].nil?
         @sort_direction = array[ 1 ].to_sym unless array[ 1 ].nil?
       end
-      @sortable_columns = opt[ :sortable_columns ].presence || []
+
+      # sortable_columns = { column => [ one of or both of :asc, :desc ] }
+      if opt.key?( :sortable_columns )
+        opt[ :sortable_columns ].each_with_index do | column, idx |
+          unless column.is_a?( Hash )
+            opt[ :sortable_columns ][ idx ] = { column => [ :asc, :desc ] }
+          end
+        end
+      else
+        opt[ :sortable_columns ] = []
+      end
+      @sortable_columns = opt[ :sortable_columns ]
     end
 
     #

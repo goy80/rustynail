@@ -2,7 +2,7 @@
 <div>
   <h5>並び替え</h5>
   <ul>
-  <% direction.sortable_columns.each do | column |
+  <% sort_direction.sortable_columns.each do | column |
       if column.instance_of?( Hash )
         field = column.keys.first
         directions = column.values.first

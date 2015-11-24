@@ -8,6 +8,7 @@ module Rustynail
     include ActiveSupport::Configurable
     config_accessor :column_name_converter
     config_accessor :option_name_converter
+    config_accessor :sort_option_converter
     config_accessor :facet_max
     config_accessor :qs_filter_name
     config_accessor :search_action_name
@@ -25,6 +26,7 @@ module Rustynail
   configure do | config |
     config.column_name_converter = nil
     config.option_name_converter = nil
+    config.sort_option_converter = nil
     config.facet_max = -1
     config.qs_filter_name = :filter
     config.search_action_name = :search

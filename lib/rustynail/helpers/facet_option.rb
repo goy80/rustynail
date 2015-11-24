@@ -5,16 +5,23 @@ module Rustynail
   module Helpers
     class FacetOption
 
-      def initialize facet={}, direction = nil, filter = {}
+      def initialize facet={}, sort_direction = nil, filter = {}
         @facet = facet
-        @direction = direction
+        @direction = sort_direction
         @filter = filter
       end
 
-      def to_s
+      def to_s( opt={} )
+        locals = {
+          options: @facet,
+          sort_direction: @direction,
+          filter: @filter
+        }.merge( opt[ :locals ].presence || {} )
+
         action_view = ActionView::Base.new
-        action_view.view_paths = File.expand_path( '../../../../app/views', __FILE__ )
-        action_view.render( partial: "facet_option", locals: { options: @facet, direction: @direction, filter: @filter } )
+        action_view.view_paths << File.join( Rails.root, "/app/views/rustynail" )
+        action_view.view_paths << File.expand_path( '../../../../app/views/rustynail', __FILE__ )
+        action_view.render( partial: "facet_option", locals: locals )
       end
 
 

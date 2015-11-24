@@ -10,14 +10,16 @@ module Rustynail
     # @option opt [ Hash ] :facet_option ファセット検索オプション。
     # @option opt [ Result::Direction ] :sort_direction 検索結果ソート順。
     # @option opt [ Hash ] :filter 現在選択されている検索条件。
+    # @option opt [ Hash ] :locals ビューにローカル変数として渡す値。
     #
     def facet_options opt={}
       facets = opt[ :facet_option ].presence || {}
       sort_direction = opt[ :sort_direction ]
       filter = opt[ :filter ] || {}
+      locals = opt[ :locals ] || {}
 
       facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction, filter )
-      facet_options.to_s
+      facet_options.to_s( locals: locals )
     end
 
     #
@@ -55,6 +57,19 @@ module Rustynail
       ret = column if ret.nil?
       ret
     end
+
+    #
+    # ソートオプションの日本語表記を返す。
+    #
+    def sort_option_label( column, direction )
+      ret = nil
+      begin
+        ret = Rustynail.config.sort_option_converter[ column ][ direction ]
+      end
+      ret = "#{column} #{direction}" if ret.nil?
+      ret
+    end
+
 
     #
     # 選択肢の上限に達していればtrue
@@ -122,6 +137,12 @@ module Rustynail
       filter[ column ].to_s == opt_name.to_s
     end
 
+    #
+    # 選択中のソートオプションかどうか
+    #
+    def selected_sort?( column, direction, filter )
+      filter[ :order_by ].to_s == column.to_s && filter[ :direction ].to_s == direction.to_s
+    end
 
   end
 end
