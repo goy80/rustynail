@@ -8,6 +8,8 @@ module Rustynail
     include ActiveSupport::Configurable
     config_accessor :column_name_converter
     config_accessor :option_name_converter
+
+
     config_accessor :sort_option_converter
     config_accessor :facet_max
     config_accessor :qs_filter_name
