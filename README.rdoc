@@ -2,6 +2,6 @@
 
 This project rocks and uses MIT-LICENSE.
 
-# Create cofig file.
+== Create cofig file.
 
  $ bin/rails g rustynail:config
