@@ -1,4 +1,4 @@
-
+<!-- SortOption -->
 <div>
   <h5>並び替え</h5>
   <ul>
@@ -17,8 +17,10 @@
   <% end %>
   </ul>
 </div>
+<!-- /SortOption -->
 
 
+<!-- FacetOption -->
 <% options.each do | column, opt_hash | %>
 <div>
   <h5><%= column_name_label( column ) %>で絞り込む</h5>
@@ -43,3 +45,4 @@
   <% end %>
 </div>
 <% end %>
+<!-- /FacetOption -->
