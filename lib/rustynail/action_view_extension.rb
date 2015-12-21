@@ -7,7 +7,7 @@ module Rustynail
     # ファセット検索のviewを返す。
     #
     # @params [ Hash ] opt ファセット検索結果。
-    # @option opt [ Hash ] :facet_option ファセット検索オプション。
+    # @option opt [ Hash ] :facet_option ファセット検索の選択肢。
     # @option opt [ Result::Direction ] :sort_direction 検索結果ソート順。
     # @option opt [ Hash ] :filter 現在選択されている検索条件。
     # @option opt [ Hash ] :locals ビューにローカル変数として渡す値。
@@ -19,7 +19,7 @@ module Rustynail
       locals = opt[ :locals ] || {}
 
       facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction, filter )
-      facet_options.to_s( locals: locals )
+      facet_options.to_html( locals: locals )
     end
 
     #

@@ -11,7 +11,13 @@ module Rustynail
         @filter = filter
       end
 
-      def to_s( opt={} )
+      #
+      # ファセットオプションのHTMLを返す。
+      #
+      # @param [Hash] opt
+      # @option opt [Hash] :locals viewに渡す変数
+      #
+      def to_html( opt={} )
         locals = {
           options: @facet,
           sort_direction: @direction,
