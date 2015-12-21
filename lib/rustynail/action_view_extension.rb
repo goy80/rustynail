@@ -137,12 +137,6 @@ module Rustynail
       filter[ column ].to_s == opt_name.to_s
     end
 
-    #
-    # 選択中のソートオプションかどうか
-    #
-    def selected_sort?( column, direction, filter )
-      filter[ :order_by ].to_s == column.to_s && filter[ :direction ].to_s == direction.to_s
-    end
 
   end
 end
