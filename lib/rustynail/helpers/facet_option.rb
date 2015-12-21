@@ -8,11 +8,9 @@ module Rustynail
       #
       # @param [ Result::Base ] 検索結果オブジェクト
       #
-      def initialize( result, facet={}, sort_direction = nil, filter = {} )
+      def initialize( result, facet={} )
         @result = result
         @facet = facet
-        @direction = sort_direction
-        @filter = filter
       end
 
       #
@@ -25,8 +23,7 @@ module Rustynail
         locals = {
           result: @result,
           options: @facet,
-          sort_direction: @direction,
-          filter: @filter
+          filter: @result.filter
         }.merge( opt[ :locals ].presence || {} )
 
         action_view = ActionView::Base.new
