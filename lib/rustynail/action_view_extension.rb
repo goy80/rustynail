@@ -11,14 +11,16 @@ module Rustynail
     # @option opt [ Result::Direction ] :sort_direction 検索結果ソート順。
     # @option opt [ Hash ] :filter 現在選択されている検索条件。
     # @option opt [ Hash ] :locals ビューにローカル変数として渡す値。
+    # @option opt [ Result::Base ] :result 検索結果オブジェクト。
     #
-    def facet_options opt={}
+    def facet_options( opt={} )
       facets = opt[ :facet_option ].presence || {}
       sort_direction = opt[ :sort_direction ]
       filter = opt[ :filter ] || {}
       locals = opt[ :locals ] || {}
+      result = opt[ :result ] || Result::Base.new
 
-      facet_options = Rustynail::Helpers::FacetOption.new( facets, sort_direction, filter )
+      facet_options = Rustynail::Helpers::FacetOption.new( result, facets, sort_direction, filter ) # @TODO sort_direction, filterをトル
       facet_options.to_html( locals: locals )
     end
 
@@ -127,14 +129,6 @@ module Rustynail
         params = filter
       end
       params
-    end
-
-
-    #
-    # 選択中のオプションかどうか
-    #
-    def selected_option?( column, opt_name, filter = {} )
-      filter[ column ].to_s == opt_name.to_s
     end
 
 

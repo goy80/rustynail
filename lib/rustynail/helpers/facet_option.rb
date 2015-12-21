@@ -5,7 +5,11 @@ module Rustynail
   module Helpers
     class FacetOption
 
-      def initialize facet={}, sort_direction = nil, filter = {}
+      #
+      # @param [ Result::Base ] 検索結果オブジェクト
+      #
+      def initialize( result, facet={}, sort_direction = nil, filter = {} )
+        @result = result
         @facet = facet
         @direction = sort_direction
         @filter = filter
@@ -19,6 +23,7 @@ module Rustynail
       #
       def to_html( opt={} )
         locals = {
+          result: @result,
           options: @facet,
           sort_direction: @direction,
           filter: @filter
