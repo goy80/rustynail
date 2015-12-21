@@ -47,5 +47,13 @@ module Rustynail::Result
       Rustynail.config.sort_option_converter[ @sort_by ][ @sort_direction ] || "不明なソート方法"
     end
 
+    #
+    # @param [Symbol] column ソートのカラム名
+    # @param [Symbol] direction ソートの方向(:asc, :desc)
+    #
+    def selected_sort?( column, direction )
+      column.to_sym == @sort_by && direction.to_sym == @sort_direction
+    end
+
   end
 end
