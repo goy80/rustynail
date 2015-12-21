@@ -47,8 +47,8 @@ module Rustynail
     def self.facet_search( filter = {} )
       begin
         list = search( filter )
-        options = facet_options( filter )
-        @result = Result::Base.new( list: list, options: options, direction: sort_direction )
+        facet_options = facet_options( filter )
+        @result = Result::Base.new( list: list, facet_options: facet_options, direction: sort_direction, filter: filter )
       rescue => ex
         Rails.logger.error "exception occur during facet_search. message=#{ ex.message }, backtrace is bellow.\n #{ ex.backtrace.join( "\n" )}"
         raise "fail_to_facet_search"
@@ -128,7 +128,7 @@ module Rustynail
     end
 
     #
-    # 検索結果に対してのファセットを返す。
+    # 検索結果の絞りこみに使えるファセット検索選択肢を返す。
     #
     # @param [ Hash ] flter 検索条件
     # @return [ Result::Options ] ファセット検索条件オブジェクト
