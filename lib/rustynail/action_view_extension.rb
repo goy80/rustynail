@@ -10,8 +10,10 @@ module Rustynail
     # @option opt [ Hash ] :facet_option ファセット検索の選択肢。
     # @option opt [ Hash ] :locals ビューにローカル変数として渡す値。
     # @option opt [ Result::Base ] :result 検索結果オブジェクト。
+    # @return [String] ファセット検索フォームのHTML。
     #
-    def facet_options( opt={} )
+    #
+    def render_facet_options( opt={} )
       facets = opt[ :facet_option ].presence || {} # @TODO 外から渡さなくてresultから引けるようにする
       locals = opt[ :locals ] || {}
       result = opt[ :result ] || Result::Base.new
