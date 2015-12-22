@@ -7,7 +7,7 @@ This project rocks and uses MIT-LICENSE.
  $ bin/rails g rustynail:config
 
 ## Mix-In
-Rustynail must be included by class that implemnting facet-search.
+Rustynail must be included by class that implementing facet-search.
 
 ```ruby 
 class Klass < ActiveRecord::Base
