@@ -24,13 +24,10 @@ on view file.
 @render is rustynail result object. 
 
 ### for initial page ( before search. )
-controller
 ```ruby
 @result = Klass.facet_search_initial_result
 ```
-
 ### for search page ( after search. )
-conftoller
 ```ruby
 @result = klass.facet_search( filter )
 ```
