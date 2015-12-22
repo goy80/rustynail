@@ -6,17 +6,15 @@ module Rustynail
     #
     # ファセット検索のviewを返す。
     #
-    # @params [ Hash ] opt ファセット検索結果。
-    # @option opt [ Hash ] :facet_option ファセット検索の選択肢。
-    # @option opt [ Hash ] :locals ビューにローカル変数として渡す値。
-    # @option opt [ Result::Base ] :result 検索結果オブジェクト。
+    # @param [ Result::Base ] result 検索結果オブジェクト。
+    # @param [ Hash ] opts
+    # @option opts [ Hash ] :locals ビューにローカル変数として渡す値。
+    # @return [String] ファセット検索フォームのHTML。
     #
-    def facet_options( opt={} )
-      facets = opt[ :facet_option ].presence || {} # @TODO 外から渡さなくてresultから引けるようにする
-      locals = opt[ :locals ] || {}
-      result = opt[ :result ] || Result::Base.new
-
-      facet_options = Rustynail::Helpers::FacetOption.new( result, facets )
+    #
+    def render_facet_options( result, opts={} )
+      locals = opts[ :locals ] || {}
+      facet_options = Rustynail::Helpers::FacetOption.new( result )
       facet_options.to_html( locals: locals )
     end
 

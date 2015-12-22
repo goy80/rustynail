@@ -42,17 +42,25 @@ module Rustynail
     #
     # 検索結果、ファセットオプションなどをまとめて返す。
     #
-    # @return Result::Base
+    # @return [Result::Base]
     #
     def self.facet_search( filter = {} )
       begin
         list = search( filter )
-        facet_options = facet_options( filter )
-        @result = Result::Base.new( list: list, facet_options: facet_options, direction: sort_direction, filter: filter )
+        @result = Result::Base.new( self, list: list, direction: sort_direction, filter: filter )
       rescue => ex
         Rails.logger.error "exception occur during facet_search. message=#{ ex.message }, backtrace is bellow.\n #{ ex.backtrace.join( "\n" )}"
         raise "fail_to_facet_search"
       end
+    end
+
+    #
+    # 初期状態（検索実行前）に検索結果オブジェクトを返す。
+    #
+    # @return [Result::Base]
+    #
+    def self.facet_search_initial_result
+      Result::Base.new( self )
     end
 
 

@@ -8,9 +8,8 @@ module Rustynail
       #
       # @param [ Result::Base ] 検索結果オブジェクト
       #
-      def initialize( result, facet={} )
+      def initialize( result )
         @result = result
-        @facet = facet
       end
 
       #
@@ -22,7 +21,7 @@ module Rustynail
       def to_html( opt={} )
         locals = {
           result: @result,
-          options: @facet,
+          options: @result.facet_options.to_h,
           filter: @result.filter
         }.merge( opt[ :locals ].presence || {} )
 
