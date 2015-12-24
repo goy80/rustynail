@@ -1,6 +1,24 @@
 # Rustynail
 
-This project rocks and uses MIT-LICENSE.
+A Full-Text-Search and Facet-Search form generator for Rails application using Mroonga. 
+
+# Premise
+ The model include Rustynail resnponds a table that use Mroonga as strage engine.  
+ A sample table constructure is bellow.
+ 
+```sql
+CREATE TABLE `a_table` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `column1` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `column2` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `column3` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `column4` int(11) NOT NULL,
+  `column5` int(11) NOT NULL,
+  `column6` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  FULLTEXT KEY `idx01` (`column1`,`column2`,`column3`)
+) ENGINE=Mroonga DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+```
 
 ## Create cofig file.
 
