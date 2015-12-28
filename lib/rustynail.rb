@@ -142,56 +142,52 @@ module Rustynail
     # @return [ Result::Options ] ファセット検索条件オブジェクト
     #
     def self.facet_options( filter = {} )
-      begin
-        filter ||= {}
+      filter ||= {}
 
-        if @@full_text_search_columns.blank?
-          raise "full-text-search-columns not specified."
-        end
-
-        # filterオプションの構築
-        filter_conds = []
-        @@facet_columns.each do | column |
-          if filter.key? column
-            value = filter[ column ]
-            unless self.columns.find{ |col| col.name == column.to_s }.number?
-              value = %!\""#{ value }\""!
-            end
-
-            filter_conds << "#{ column } == #{ value }"
-          end
-        end
-        filter_option = filter_conds.length > 0 ? %!--filter '#{ filter_conds.join(" && ") }'! : ""
-
-        #
-        # --match_columns 全文検索対象カラム
-        # --filter 絞込み条件
-        #
-        sql = %!SELECT mroonga_command("select #{ @@table_name } \
-                --limit 0 \
-                --match_columns '#{ @@full_text_search_columns.join("||") }' \
-                --query '#{ filter[ :keyword ] }' #{filter_option} \
-                --drilldown '#{ @@facet_columns.join(",") }' \
-                --drilldown_sortby '-_nsubrecs, _key' \
-                --drilldown_limit -1 \
-                ") AS facet_options !
-
-        dum = connection.select sql
-        res = JSON.parse( dum.first["facet_options"] )
-        res.delete_at( 0 )
-
-        ret = {}
-        @@facet_columns.each_with_index do | column, idx |
-          2.times do
-            res[ idx ].delete_at 0
-          end
-          ret[ column.to_s ] = Hash[ *res[ idx ].flatten ]
-        end
-
-        Result::Options.new( ret )
-      rescue => ex
-        Rails.logger.error "exception: message = #{ ex.message }. backtrace is bellow.\n #{ ex.backtrace.join("\n") }"
+      if @@full_text_search_columns.blank?
+        raise "full-text-search-columns not specified."
       end
+
+      # filterオプションの構築
+      filter_conds = []
+      @@facet_columns.each do | column |
+        if filter.key? column
+          value = filter[ column ]
+          unless self.columns.find{ |col| col.name == column.to_s }.number?
+            value = %!\""#{ value }\""!
+          end
+
+          filter_conds << "#{ column } == #{ value }"
+        end
+      end
+      filter_option = filter_conds.length > 0 ? %!--filter '#{ filter_conds.join(" && ") }'! : ""
+
+      #
+      # --match_columns 全文検索対象カラム
+      # --filter 絞込み条件
+      #
+      sql = %!SELECT mroonga_command("select #{ @@table_name } \
+              --limit 0 \
+              --match_columns '#{ @@full_text_search_columns.join("||") }' \
+              --query '#{ filter[ :keyword ] }' #{filter_option} \
+              --drilldown '#{ @@facet_columns.join(",") }' \
+              --drilldown_sortby '-_nsubrecs, _key' \
+              --drilldown_limit -1 \
+              ") AS facet_options !
+
+      dum = connection.select sql
+      res = JSON.parse( dum.first["facet_options"] )
+      res.delete_at( 0 )
+
+      ret = {}
+      @@facet_columns.each_with_index do | column, idx |
+        2.times do
+          res[ idx ].delete_at 0
+        end
+        ret[ column.to_s ] = Hash[ *res[ idx ].flatten ]
+      end
+
+      Result::Options.new( ret )
 
     end
 

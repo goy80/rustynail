@@ -13,9 +13,15 @@ module Rustynail
     #
     #
     def render_facet_options( result, opts={} )
-      locals = opts[ :locals ] || {}
-      facet_options = Rustynail::Helpers::FacetOption.new( result )
-      facet_options.to_html( locals: locals )
+      begin
+        locals = opts[ :locals ] || {}
+        facet_options = Rustynail::Helpers::FacetOption.new( result )
+        ret = facet_options.to_html( locals: locals )
+      rescue => ex
+        Rails.logger.debug "exception occur. message=#{ex.message}, backtrace is bellow.\n#{ ex.backtrace }"
+        ret = "Rustynail error."
+      end
+      ret
     end
 
     #
