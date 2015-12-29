@@ -67,3 +67,17 @@ on view file.
 ```
 "filter" is Hash of search condition. 
 
+### Overwride Facet-Search-Option template file.
+
+Rustynail uses partial template file on path bellow of project. 
+Facet-Search-Option view is customizable by writing custom code to the file.
+```
+app/views/rustynail/_facet_option.html.erb
+```
+
+You can use local variables on this file by passing value to *render_facet_options* method like this.
+```ruby
+<%= render_facet_options( @result, locals:{ foo: bar } ) %>
+```
+
+On the custom template file, you can accessible to *@result* as local variable *result*.
