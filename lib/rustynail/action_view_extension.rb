@@ -18,8 +18,8 @@ module Rustynail
         facet_options = Rustynail::Helpers::FacetOption.new( result )
         ret = facet_options.to_html( locals: locals )
       rescue => ex
-        Rails.logger.debug "exception occur. message=#{ex.message}, backtrace is bellow.\n#{ ex.backtrace }"
-        ret = "Rustynail error."
+        Rails.logger.error %!exception occur. message=#{ex.message}, backtrace is bellow.\n#{ ex.backtrace.join("\n") }!
+        ret = "Rustynail Error."
       end
       ret
     end

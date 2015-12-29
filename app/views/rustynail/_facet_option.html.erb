@@ -2,17 +2,9 @@
 <div>
   <h5>並び替え</h5>
   <ul>
-  <% sort_direction.sortable_columns.each do | column |
-      if column.instance_of?( Hash )
-        field = column.keys.first
-        directions = column.values.first
-      else
-        field = column
-        directions = [ :asc, :desc ]
-      end
-  %>
-    <% directions.each do | direction | %>
-      <li><%= link_to "#{ field } #{ direction }", sort_result_path( field, direction, filter ) %></li>
+  <% Rustynail.config.sort_option_converter.each do | column, _hash | %>
+    <% _hash.keys.each do | direction | %>
+      <li><%= link_to "#{ column } #{ direction }", sort_result_path( column, direction, filter ) %></li>
     <% end %>
   <% end %>
   </ul>
@@ -29,7 +21,7 @@
       cnt = 0
       opt_hash.each do | opt_name, count |
         cnt += 1
-        is_selected = selected_option?( column, opt_name, filter )
+        is_selected = result.selected_option?( column, opt_name )
     %>
       <li <%= "class=selected_option" if is_selected %> >
         <%= link_to "#{ opt_name_label( column, opt_name ) } #{ number_with_delimiter( count, delimiter: "," ) }",  facet_search_path( column, opt_name, filter ) %>

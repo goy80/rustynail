@@ -23,7 +23,7 @@ module Rustynail::Result
     def initialize( include_class, opts={} )
       @include_class = include_class
       @filter = opts[ :filter ] || {}
-      @list = opts[ :list ].presence || []
+      @list = opts[ :list ]
       @direction = opts[ :direction ].presence || Direction.new( "" )
     end
 
