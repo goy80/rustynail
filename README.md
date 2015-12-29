@@ -75,7 +75,9 @@ Facet-Search-Option view is customizable by writing custom code to the file.
 app/views/rustynail/_facet_option.html.erb
 ```
 
-you can use local variables on this file by passing value to *render_facet_options* method like this.
+You can use local variables on this file by passing value to *render_facet_options* method like this.
 ```ruby
 <%= render_facet_options( @result, locals:{ foo: bar } ) %>
 ```
+
+On the custom template file, you can accessible to *@result* as local variable *result*.
