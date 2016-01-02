@@ -89,7 +89,7 @@ module Rustynail
     # @return [ String ] ファセット検索結果へのパス
     #
     def facet_search_path( column, value, filter = {} )
-      Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, filter, :select, value )
+      "/"+Rustynail.config.search_action_name.to_s+"?"+build_query_string( column, filter, :select, value )
     end
 
     #
