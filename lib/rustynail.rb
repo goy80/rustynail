@@ -12,8 +12,6 @@ module Rustynail
   @@sortable_columns = []
   @@default_sort = []
   @@table_name = "my_table"
-  @@search_limit = 200
-
 
   included do
 
@@ -108,7 +106,6 @@ module Rustynail
       # 検索の実行
       ret = self.where( cond.join(" AND "), values  )
           .order( orders.join(", ") )
-          .limit( @@search_limit )
 
       ret
     }
