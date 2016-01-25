@@ -170,6 +170,7 @@ module Rustynail
               --drilldown '#{ @@facet_columns.join(",") }' \
               --drilldown_sortby '-_nsubrecs, _key' \
               --drilldown_limit -1 \
+              --cache no \
               ") AS facet_options !
 
       dum = connection.select sql
