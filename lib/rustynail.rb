@@ -9,6 +9,7 @@ module Rustynail
 
   @@full_text_search_columns = []
   @@facet_columns = []
+  @@tag_columns = []
   @@sortable_columns = []
   @@default_sort = []
   @@table_name = "my_table"
@@ -18,22 +19,27 @@ module Rustynail
     @@table_name =  self.table_name
 
     # 全文検索の対象フィールド
-    def self.full_text_search_columns columns
+    def self.full_text_search_columns( columns )
       @@full_text_search_columns = columns
     end
 
     # ファセット検索の対象フィールド
-    def self.facet_columns columns
+    def self.facet_columns( columns )
       @@facet_columns = columns
     end
 
+    # タグ検索の対象フィールド
+    def self.tag_columns( columns )
+      @@tag_columns = columns
+    end
+
     # ソート可能フィールド
-    def self.sortable_columns columns
+    def self.sortable_columns( columns )
       @@sortable_columns = columns
     end
 
     # デフォルトのソート順
-    def self.default_sort sort
+    def self.default_sort( sort )
       @@default_sort = sort
     end
 
@@ -92,6 +98,15 @@ module Rustynail
           values[ column ] = filter[ column ]
         end
       end
+
+      # タグ検索による絞込み
+      @@tag_columns.each do | column |
+        if filter.key? column
+          cond << " #{ column } like :#{ column }"
+          values[ column ] = "%,#{ filter[ column ] },%"
+        end
+      end
+
 
       # OrderBy
       if filter.key?( "order_by" )
@@ -157,6 +172,24 @@ module Rustynail
           filter_conds << "#{ column } == #{ value }"
         end
       end
+
+      # タグ型の条件
+      # タグはソートされてデリミタで囲って連結された文字列。
+      # タグの取りえる値はリストになっており、更新の度に廃止されたタグは除去されるようにする。
+      # 現在この条件は結果の絞込みだけに使えて、ファセットオプションとして検索結果に対してとり得る値を
+      # 提供することはできない。
+      #
+      # @HINT
+      # --drilldown でタグのフィールドを指定し、結果をパース・集計するという手もあるが
+      # 遅くなりそう
+      @@tag_columns.each do | column |
+        if filter.key? column
+          value = filter[ column ]
+          target = ",#{ value },"
+          filter_conds << %!#{ column } @ ""#{ target }""!
+        end
+      end
+
       filter_option = filter_conds.length > 0 ? %!--filter '#{ filter_conds.join(" && ") }'! : ""
 
       #
