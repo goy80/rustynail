@@ -104,7 +104,7 @@ module Rustynail
     #
     def sort_result_path( column, direction, filter = {} )
       filter = build_filter( :order_by, filter, :select, column ).symbolize_keys
-      Rustynail.config.search_action_name.to_s+"?"+build_query_string( :direction, filter, :select, direction )
+      "/"+Rustynail.config.search_action_name.to_s+"?"+build_query_string( :direction, filter, :select, direction )
     end
 
 
