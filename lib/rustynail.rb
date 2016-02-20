@@ -13,6 +13,7 @@ module Rustynail
   @@sortable_columns = []
   @@default_sort = []
   @@table_name = "my_table"
+  @@db_specify_key = nil
 
   included do
 
@@ -41,6 +42,11 @@ module Rustynail
     # デフォルトのソート順
     def self.default_sort( sort )
       @@default_sort = sort
+    end
+
+    # キャッシュ区別のためのダミー文字列
+    def self.db_specify_key( str )
+      @@db_specify_key = str
     end
 
     #
@@ -148,6 +154,17 @@ module Rustynail
     end
 
     #
+    # selectの --output_columnsに指定する文字列を返す。
+    #
+    # 別DB間でキャッシュを共有してしまうため存在しないフィールドを混ぜてクエリーを別にするという裏技。
+    #
+    def self.output_columns
+      ret = "_id, _key, *"
+      ret << ", dummy::#{@@db_specify_key}" if @@db_specify_key.present?
+      ret
+    end
+
+    #
     # 検索結果の絞りこみに使えるファセット検索選択肢を返す。
     #
     # @param [ Hash ] flter 検索条件
@@ -198,12 +215,12 @@ module Rustynail
       #
       sql = %!SELECT mroonga_command("select #{ @@table_name } \
               --limit 0 \
+              --output_columns '#{ output_columns }' \
               --match_columns '#{ @@full_text_search_columns.join("||") }' \
               --query '#{ filter[ :keyword ] }' #{filter_option} \
               --drilldown '#{ @@facet_columns.join(",") }' \
               --drilldown_sortby '-_nsubrecs, _key' \
               --drilldown_limit -1 \
-              --cache no \
               ") AS facet_options !
 
       dum = connection.select sql
