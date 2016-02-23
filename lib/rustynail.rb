@@ -160,7 +160,7 @@ module Rustynail
     #
     def self.output_columns
       ret = "_id, _key, *"
-      ret << ", dummy::#{@@db_specify_key}" if @@db_specify_key.present?
+      ret << ", dummy::#{@@db_specify_key}::#{Rails.env}" if @@db_specify_key.present?
       ret
     end
 
