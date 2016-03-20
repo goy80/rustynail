@@ -223,7 +223,7 @@ module Rustynail
               --drilldown_limit -1 \
               ") AS facet_options !
 
-      dum = connection.select sql
+      dum = connection.select_all sql
       res = JSON.parse( dum.first["facet_options"] )
       res.delete_at( 0 )
 
